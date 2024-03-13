@@ -1,0 +1,38 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block page_content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <h4 class="card-title">{{ user.username }}</h4>
+                        <p class="card-text">Last login: {{ user.last_login|timesince }} ago</p>
+                        <p class="card-text">Is staff: {{ user.is_staff }}</p>
+                        <div class="btn-group-vertical">
+                            <a href="{% url 'edit_profile' %}" class="btn btn-primary d-block mb-2">Edit Profile</a>
+                            <a href="{% url 'delete_profile' %}" class="btn btn-danger d-block">Delete Profile</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Your Rooms</h4>
+                        <ul class="list-group list-group-flush">
+                            {% for room in rooms %}
+                                <li class="list-group-item"><a href="{% url 'join room' room.url %}">{{ room.url }}
+                                    | {{ room.title }}</a></li>
+                            {% empty %}
+                                <p>User has not created any public rooms.</p>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

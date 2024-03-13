@@ -1,0 +1,17 @@
+{% for room in rooms %}
+    <tr onclick="window.location='{% url 'join room' room_name=room.url %}';">
+        <td>{{ forloop.counter }}</td>
+        <td>{{ room.url }}</td>
+        <td>{{ room.description }} </td>
+        <td>
+            {% for category in room.categories.all %}
+                <div class="category-tag"
+                     style="background-color: {{ category.color }}">{{ category.name }}</div>
+            {% endfor %}
+        </td>
+    </tr>
+{% empty %}
+    <tr>
+        <td colspan="4">No public rooms found.</td>
+    </tr>
+{% endfor %}

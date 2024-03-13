@@ -1,0 +1,155 @@
+/*#373b3e,#bec8d1,#86cecb,#137a7f,#e12885*/
+
+:root {
+  --primary-color: #06beb6;
+  --secondary-color: #137a7f;
+  --darker-color: #373b3e;
+}
+
+body {
+  background-color: #1c1e22;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+}
+
+.navbar {
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.nav-link {
+  color: #fff;
+  font-weight: 500;
+  padding: 1rem 0;
+}
+
+.nav-link:hover {
+  color: var(--primary-color);
+  background: #232526;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to top, #414345, #232526);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to top, #414345, #232526); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.navbar .active {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.list-group-item {
+  background-color: var(--darker-color);
+}
+
+input {
+  border-color: black!important;
+}
+
+input.form-control:disabled {
+  background-color: #5c5c5c;
+  border: 1px solid #ccc;
+}
+
+input.form-control:focus {
+  background-color: #5c5c5c;
+  border: 2px solid #555;
+  color: #fff;
+}
+
+input.form-control:disabled::placeholder,
+input.form-control:focus::placeholder {
+  color: #c1c1c1;
+}
+
+
+.btn-primary {
+background: #2f9c90;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to bottom, #2f9c90, #136a8a);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to bottom, #2f9c90, #136a8a); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border-color: var(--darker-color);
+  font-weight: 500;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+background: #136a8a;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to top, #2f9c90, #136a8a);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to top, #2f9c90, #136a8a); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border-color: var(--secondary-color);
+  outline: 0 none;
+}
+
+.form-control {
+  background-color: #333;
+  border-color: #fff;
+  color: #fff;
+}
+
+.container,
+.container-fluid {
+  max-width: 1200px;
+}
+
+.jumbotron {
+  background-image: url('https://source.unsplash.com/1600x900/?nature');
+  background-size: cover;
+  color: #fff;
+  text-shadow: 1px 1px #111;
+  padding-top: 10rem;
+  padding-bottom: 6rem;
+}
+
+.jumbotron h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  text-shadow: 2px 2px #111;
+  margin-bottom: 2rem;
+}
+
+.jumbotron p {
+  font-size: 1.5rem;
+  font-weight: 400;
+  text-shadow: 1px 1px #111;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background-color: #1d1d1d;
+  color: #fff;
+  border: 1px solid #a4a4a4;
+  border-radius: 5px;
+}
+
+.card-header {
+  background-color: #333;
+  color: #fff;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.card-text {
+  font-size: 1rem;
+}
+
+.footer {
+  background-color: #111;
+  color: #fff;
+  padding: 4rem 0;
+}
+
+.footer p {
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+
+.footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,71 @@
+#playlist {
+    border: 1px solid white;
+}
+
+.container-fluid {
+    padding-top: 2em!important;
+}
+
+pre {
+    white-space: pre-line;
+    color: white;
+}
+
+#player {
+    border: 2px solid black;
+}
+
+.navbar li:hover,
+#playlist .playlist-item:hover {
+    background-color: #1d2124!important;
+}
+
+#id_video_id {
+    background-color: #1b1e21;
+    color: white;
+}
+
+#chat-messages {
+    max-height: 450px;
+    height: 450px;
+    overflow-y: scroll;
+}
+
+#playlist .playlist-item {
+    background-color: #454d55;
+}
+
+.playlist-item.active {
+    border: 2px solid white;
+    text-decoration: underline;
+}
+
+.error-box {
+  position: relative;
+  display: none;
+  margin-top: 5px;
+  padding: 5px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #721c24;
+}
+
+.close-error-box {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+}
+
+.custom-list-item {
+    display: inline;
+    margin: 0;
+    padding: 0 0 0 50px;
+    font-weight: bold;
+    color: orange;
+}
+
+body {
+  padding-bottom: 20px;
+}

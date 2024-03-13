@@ -1,0 +1,13 @@
+{% for message in chat %}
+  <li class="media my-4 pl-3">
+    <div class="timestamp mr-3">
+      <p class="small mb-0 text-white-50">{{ message.timestamp|date:'H:i:s' }}</p>
+    </div>
+    <div class="media-body">
+      <h6 class="mt-0 mb-1">{{ message.user.username }}</h6>
+      <pre>{{ message.message }}</pre>
+    </div>
+  </li>
+{% empty %}
+  <li class="text-muted">Type /invite [user] to invite a user to a private room.</li>
+{% endfor %}

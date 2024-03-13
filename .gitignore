@@ -1,0 +1,11 @@
+.idea
+venv
+.venv
+.vscode
+.env
+__pycache__/
+migrations/
+manage.py
+staticfiles/bootstrap
+staticfiles/js
+user-videos/

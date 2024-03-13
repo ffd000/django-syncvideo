@@ -1,0 +1,169 @@
+{% extends 'base/base.html' %}
+{% block page_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <h2>Public Rooms</h2>
+                <!-- Search box -->
+                <form id="search-form" class="form-inline my-3" action="" method="get">
+                    {% csrf_token %}
+                    <input id="search-input" class="form-control mr-sm-2" type="text" placeholder="Search"
+                           aria-label="Search" name="search" style="opacity:.8;color:#222">
+                    <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
+                </form>
+                <!-- Rooms list -->
+                <table class="table table-no-more">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% include 'common/partials/search_rooms.html' %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CSRF = $('input[name=csrfmiddlewaretoken]').val()
+
+        $(document).ready(function () {
+            // Handle search form submission
+            $('#search-form').on('submit', function (event) {
+                event.preventDefault();
+                var searchQuery = $('#search-input').val();
+
+                $.ajax({
+                    type: "GET",
+                    headers: {'X-CSRFToken': CSRF},
+                    url: "{% url 'search_rooms' %}",
+                    data: {'search': searchQuery},
+                    success: function (response) {
+                        $('tbody').html(response);
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        .table {
+            overflow: hidden;
+            border-radius: 3px;
+            -webkit-box-shadow: 0 1px 6px 0 rgba(0,0,0,.12), 0 1px 6px 0 rgba(0,0,0,.12);
+               -moz-box-shadow: 0 1px 6px 0 rgba(0,0,0,.12), 0 1px 6px 0 rgba(0,0,0,.12);
+                    box-shadow: 0 1px 6px 0 rgba(0,0,0,.12), 0 1px 6px 0 rgba(0,0,0,.12);
+        }
+
+        .table > thead > tr > th {
+            border-bottom-color: #EEEEEE;
+        }
+
+        .table > tbody > tr > td,
+        .table > tbody > tr > th,
+        .table > thead > tr > td,
+        .table > thead > tr > th {
+            padding: 15px;
+            background-color: #fff;
+            border-top-color: #EEEEEE;
+        }
+
+        .table > tbody > tr:hover > td {
+            background-color: #FAFAFA;
+        }
+
+        @media (max-width: 767px) {
+            .table-no-more,
+            .table-no-more > thead,
+            .table-no-more > thead > tr,
+            .table-no-more > thead > tr > th,
+            .table-no-more > tbody,
+            .table-no-more > tbody > tr,
+            .table-no-more > tbody > tr > td {
+                display: block;
+            }
+
+            .table-no-more > thead {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+                opacity: 0;
+            }
+
+            .table-no-more > tbody > tr > td {
+                position: relative;
+                padding-left: 45%;
+            }
+
+            .table-no-more > tbody > tr:nth-child(even) > td {
+                background-color: #ffffff;
+            }
+
+            .table-no-more > tbody > tr:nth-child(odd) > td {
+                background-color: #FAFAFA;
+            }
+
+            .table-no-more > tbody > tr > td:before {
+                position: absolute;
+                top: 15px;
+                left: 5%;
+                width: 40%;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+
+            .table-no-more > tbody > tr > td:after {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 40%;
+                height: 100%;
+                border-right: 1px solid #EEEEEE;
+            }
+
+            .table-no-more > tbody > tr > td:nth-of-type(1):before {content: "#";}
+            .table-no-more > tbody > tr > td:nth-of-type(2):before {content: "First Name";}
+            .table-no-more > tbody > tr > td:nth-of-type(3):before {content: "Last Name";}
+        }
+
+        [onclick] {
+            cursor: pointer;
+        }
+
+        input {
+            background-color: #e9e9e9!important;
+        }
+
+        body {
+            background: transparent;
+        }
+
+        html {
+            background: #005C97;  /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #363795, #005C97);  /* Chrome 10-25, Safari 5.1-6 */
+            background: linear-gradient(to right, #363795, #005C97); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+        }
+
+        .category-tag {
+            display: inline-block;
+            padding: 0 12px;
+            border-radius: 15px;
+            margin-right: 8px;
+            font-weight: bold;
+            font-size: 10pt;
+            color: #fff;
+        }
+    </style>
+{% endblock %}
+{% block footer %}
+    <footer>
+        <div class="container text-center">
+            <p>&copy; 2023 SoftUni Python Web exam project demo</p>
+        </div>
+    </footer>
+{% endblock %}

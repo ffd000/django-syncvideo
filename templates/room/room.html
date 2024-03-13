@@ -1,0 +1,263 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}{{ room.url }} | SyncVideo{% endblock %}
+
+{% block page_content %}
+    <link rel="stylesheet" href="{% static 'main/css/room.css' %}">
+    <link href="https://vjs.zencdn.net/7.14.3/video-js.css" rel="stylesheet">
+
+    <div class="row justify-content-center">
+        <!-- Video player -->
+        <div class="col-lg-8 p-1 embed-responsive embed-responsive-16by9">
+            <video id="player" class="video-js vjs-default-skin embed-responsive-item vjs-big-play-centered" controls
+                   preload="auto" style="display:none">
+        </div>
+
+        <!-- Chat -->
+        <div class="col p-2">
+            <div class="card bg-dark text-white">
+                <div class="card-body p-0">
+                    <!-- Message list -->
+                    <ul class="list-unstyled mb-0" id="chat-messages">
+                        {% include 'room/partials/messages.html' %}
+                    </ul>
+                    <!-- Chat form -->
+                    <form id="chat-form" method="post" action="">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="col-12 px-3 pb-3">
+                                <input id="message" type="text" name="message" class="form-control" autocomplete="off"
+                                       placeholder="{% if not user.is_authenticated %}Log in to chat{% else %}Type your message...{% endif %}"
+                                       {% if not user.is_authenticated %}disabled{% endif %} maxlength="250">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Alert boxes -->
+            <div id="playback-error" class="alert alert-danger alert-dismissible" style="display:none">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <span id="error-message"></span>
+            </div>
+
+            <div id="success-box" class="alert alert-info alert-dismissible" style="display:none">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+              <p id="success-message"></p>
+            </div>
+
+            <!-- Add video form -->
+            <div class="input-group input-group mb-3" {% if not user.is_authenticated %}style="display:none"{% endif %}>
+                <div class="input-group-btn">
+                    <button type="button" id="addURLBtn" class="btn btn-primary p-2">Add URL</button>
+                    <button type="button" id="uploadVideoBtn" class="btn btn-primary p-2">Upload Video</button>
+                </div>
+            </div>
+            <!-- URL field -->
+            <div id="urlInputField" {% if not user.is_authenticated %}style="display:none"{% endif %}>
+                <form id="url-form" class="input-group mb-3" method="post" action="">
+                    {% csrf_token %}
+                    <input id="id_video_url" type="text" class="form-control input-lg" name="video_id"
+                           autocomplete="off" placeholder="Media URL" maxlength="300" required>
+                    <div class="input-group-btn">
+                        <button class="btn btn-primary" type="submit" id="addToPlaylistUrlBtn">Add</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- File upload field -->
+            <div id="fileInputField" style="display:none">
+                <form id="upload-form" enctype="multipart/form-data" method="POST" action="">
+                    {% csrf_token %}
+                    <input type="text" class="form-control input-lg mb-4" name="video_id" autocomplete="off"
+                           placeholder="Title" id="video_file_title" maxlength="100">
+                    <div class="form-group">
+                        <input type="file" class="form-control mb-4" accept="video/webm" id="fileupload"
+                               placeholder="Select file" required>
+                        <button type="submit" id="file_submit" class="btn btn-success">Upload</button>
+                    </div>
+                </form>
+                <div id="uploaded_files"></div>
+            </div>
+            <div id="alert_box"></div>
+
+            <ul id="playlist" class="list-group">
+                {% for video in playlist %}
+                    <li class="list-group-item playlist-item" data-pk="{{ video.id }}">
+                        <a href="javascript:switchVideoHandler({{ video.id }})" class="text-light">
+                            [{{ video.provider|upper }}] {{ video.title }}
+                        </a>
+                        <a href="javascript:deleteVideoHandler({{ video.id }})"
+                           class="text-white-50 float-right">delete</a>
+                    </li>
+                {% empty %}
+                    <h4 id="no-videos">No videos</h4>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- User list -->
+        <div class="col-md-4" style="position: relative">
+            <ul class="list-group" id="user-list">
+                <li class="list-group-item p-1">Online users:</li>
+            </ul>
+            <ul class="list-group" id="guest-list">
+                <li class="list-group-item p-1">Online guests: (<span id="guest-list-counter">0</span>)</li>
+            </ul>
+        </div>
+    </div>
+    {{ room.url|json_script:"roomName" }}
+
+    <script src="{% static 'js/Videojs.js' %}"></script>
+    <script src="{% static 'js/Youtube.js' %}"></script>
+    <script src="{% static 'main/room.js' %}"></script>
+    <script src="{% static 'main/upload.js' %}"></script>
+
+    <script>
+        const videoUrlInput = $('#id_video_url');
+        const chatLog = $("#chat-messages");
+        const successBox = $('#success-box')
+        const successSpan = $('#success-message')
+
+        $('#upload-form').on('submit', (event) => {
+            event.preventDefault();
+            var uploader = new FileUpload(document.querySelector('#fileupload'))
+            uploader.upload();
+        });
+
+        $(document).ready(function () {
+            $("#addURLBtn").click(showField("#urlInputField"));
+            $("#uploadVideoBtn").click(showField("#fileInputField"));
+
+            function showField(selector) {
+                return function () {
+                    $(selector).show();
+                    $(selector === "#urlInputField" ? "#fileInputField" : "#urlInputField").hide();
+                };
+            }
+
+            chatLog.scrollTop(chatLog.prop('scrollHeight'));
+
+            initVideojs('{{ current_video }}')
+        });
+
+        $('#chat-form').submit(function (event) {
+            event.preventDefault();
+            var form = $(this);
+            var messagebox = form.find('input[name="message"]');
+            var chatmessage = messagebox.val();
+
+            if (chatmessage.startsWith('/')) {
+                var args = chatmessage.substring(1).split(' ')
+                switch (args[0]) {
+                    case 'invite':
+                        // invite user to room
+                        if (args[1].length > 0) {
+                            var user_to_invite = args[1].trim();
+                            $.ajax({
+                                url: '{% url 'invite user' room.url %}',
+                                type: 'POST',
+                                headers: {'X-CSRFToken': CSRF},
+                                data: {'username': user_to_invite},
+                                success: function (resp) {
+                                    successSpan.text("User invited successfully");
+                                    successBox.show();
+                                },
+                                error: showError
+                            })
+                        } else {
+                            errorSpan.text("You must specify a user.");
+                            errorBox.show();
+                        }
+                        break;
+                    case 'uninvite':
+                        if (args[1].length > 0) {
+                            var user = args[1].trim();
+                            $.ajax({
+                                url: '{% url 'uninvite user' room.url %}',
+                                type: 'POST',
+                                headers: {'X-CSRFToken': CSRF},
+                                data: {'username': user},
+                                success: function (resp) {
+                                    successSpan.text("User uninvited successfully");
+                                    successBox.show();
+                                },
+                                error: showError
+                            })
+                        } else {
+                            errorSpan.text("You must specify a user.");
+                            errorBox.show();
+                        }
+                        break;
+                    default:
+                        errorSpan.html("Unknown command: " + chatmessage + "<br>Commands: /invite [user], /uninvite [user]");
+                        errorBox.show();
+                        break;
+                }
+            }
+
+            var formData = form.serialize();
+
+            $.ajax({
+                url: '{% url 'send message' room.url %}',
+                headers: {'X-CSRFToken': CSRF},
+                type: 'POST',
+                data: formData,
+                success: function (resp) {
+                    messagebox.val('');
+                    // fetch all chat messages again as an easy way to update the UI
+                    // this is fine as chat history is deleted after a certain amount of messages
+                    socket_message({'type': 'chat'})
+                },
+                error: showError
+            });
+        });
+
+        $('#url-form').submit(function(event) {
+            event.preventDefault();
+
+            $.ajax({
+                method: 'POST',
+                url: '{% url 'upload video url' room.url %}',
+                headers: {'X-CSRFToken': CSRF},
+                data: {'video_url': videoUrlInput.val()},
+                dataType: 'json',
+                mode: 'same-origin',
+                success: function (data) {
+                    videoUrlInput.val('')
+                    data.type = 'add_to_playlist'
+                    socket_message(data)
+                },
+                error: showError
+            })
+        });
+
+        function deleteVideoHandler(pk) {
+            $.ajax({
+                method: 'DELETE',
+                url: `/room/{{ room.url }}/delete_video/${pk}/`,
+                headers: {'X-CSRFToken': CSRF},
+                mode: 'same-origin',
+                dataType: "json",
+                success: function (resp) {
+                    socket_message({'type': 'delete_from_playlist', 'video_pk': pk})
+                },
+                error: showError
+            })
+        }
+
+        function showError(error) {
+            let message = error.statusText;
+            if (error.responseJSON !== undefined) {
+                message += ": " + error.responseJSON.error
+            }
+            errorSpan.text(message);
+            errorBox.show();
+        }
+    </script>
+
+{% endblock %}

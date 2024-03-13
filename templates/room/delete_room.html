@@ -1,0 +1,14 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_content %}
+  <div class="container mt-5">
+    <h1>Delete Room</h1>
+    <p>Are you sure you want to delete the room "{{ room.url }}"?</p>
+    <form method="post" action="{% url 'delete room' room.url %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Delete</button>
+      <a href="{% url 'join room' room.url %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

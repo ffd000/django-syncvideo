@@ -1,0 +1,33 @@
+env:
+  - key: DJANGO_SETTINGS_MODULE
+    value: "syncvideo.settings.production"
+
+build:
+  - cmd: pip install -r requirements.txt
+
+cmd: gunicorn syncvideo.wsgi:application --bind 0.0.0.0:8000
+
+services:
+  - name: postgres
+    env:
+      - key: DATABASE_URL
+        value: "postgres://sv_postgres:ouSBXdksZCQfNgUI2qAEu0mmcda5Bao3@dpg-cj8fhb5jeehc73bsmt40-a/sv_db"
+
+  - name: redis
+    env:
+      - key: CHANNEL_LAYERS
+        value: "default@redis://red-cj8ff1tjeehc73bsh3c0:6379/0"
+
+
+envVars:
+  - key: DJANGO_SECRET_KEY
+    value: "django-secure-n7kz)y9gmvxfr6&yns^s@f15vaki&$-yl91(f5x6afmd^hrcra"
+
+mounts:
+  - source: ./
+    destination: /code
+
+redis:
+  startCommand: redis-server
+
+# pythonVersion: 3.8
